@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+demo
+.ycm_extra_conf.py
+obj/
+inc/shaders.h
