@@ -3,22 +3,22 @@ CFLAGS = `pkg-config --cflags $(PACKAGES)` -I./inc -Wall -Wextra -pedantic
 LDFLAGS = `pkg-config --libs $(PACKAGES)`
 
 OBJS = $(addprefix obj/, $(addsuffix .o, \
-	main ))
+	main shader ))
 
 OUT = demo
 
 all:    $(OUT)
 
 
-obj/%.o: src/%.c inc/shader.h
-	@mkdir -p obj; \
+obj/%.o: src/%.c inc/shaders.h
+	mkdir -p obj; \
 	gcc -c $< $(CFLAGS) -o $@
 
-$(OUT):   inc/shader.h $(OBJS)
+$(OUT):   inc/shaders.h $(OBJS)
 	gcc $(OBJS) $(LDFLAGS) -o $@
 
-inc/shader.h:	shaders/*
+inc/shaders.h:	shaders/*
 	./gen_shaders.sh
 
 clean:	
-	@rm -f main main.o shader.h
+	@rm -f $(OUTFILE) inc/shaders.h obj/*

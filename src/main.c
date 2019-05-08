@@ -1,32 +1,38 @@
-#define GL_GLEXT_PROTOTYPES why
+#define GL_GLEXT_PROTOTYPES
 
-#include<stdio.h>
-#include<stdbool.h>
-#include<stdlib.h>
-#include<stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 #include <glib-2.0/glib.h>
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
 
+#include "shader.h"
 #include "shaders.h"
 
 const int WIN_WIDTH  = 1920;
 const int WIN_HEIGHT = 1080;
 
 GLuint vao;
-GLuint p;
+GLuint fbo[2];
+unsigned active_fbo = 0;
+
+shader scene;
 
 static gboolean render(GtkGLArea *area, GdkGLContext *ctx)
 {
     (void)area;
     (void)ctx;
 
-    glUseProgram(p);
+    glUseProgram(scene.prog_id);
     glBindVertexArray(vao);
     glVertexAttrib1f(0, 0);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -38,57 +44,10 @@ static void realize(GtkGLArea *area)
 {
     gtk_gl_area_make_current(area);
 
-    GLuint f = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(f, 1, &raymarch_f, NULL);
-    glCompileShader(f);
-
-    GLint error = 0;
-    glGetShaderiv(f, GL_COMPILE_STATUS, &error);
-    if(error == GL_FALSE) {
-        GLint maxLength = 0;
-        glGetShaderiv(f, GL_INFO_LOG_LENGTH, &maxLength);
-
-        char* error = malloc(maxLength);
-        glGetShaderInfoLog(f, maxLength, &maxLength, error);
-        printf("%s\n", error);
-
-        exit(1);
-    }
-
-    GLuint v = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(v, 1, &raymarch_v, NULL);
-    glCompileShader(v);
-
-    glGetShaderiv(v, GL_COMPILE_STATUS, &error);
-    if(error == GL_FALSE) {
-        GLint maxLength = 0;
-        glGetShaderiv(v, GL_INFO_LOG_LENGTH, &maxLength);
-
-        char* error = malloc(maxLength);
-        glGetShaderInfoLog(v, maxLength, &maxLength, error);
-        printf("%s\n", error);
-
-        exit(1);
-    }
-
-    p = glCreateProgram();
-    glAttachShader(p,v);
-    glAttachShader(p,f);
-    glLinkProgram(p);
-
-    glGetProgramiv(p, GL_LINK_STATUS, (int *)&error);
-    if (error == GL_FALSE) {
-        GLint maxLength = 0;
-        glGetProgramiv(p, GL_INFO_LOG_LENGTH, &maxLength);
-
-        char* error = malloc(maxLength);
-        glGetProgramInfoLog(p, maxLength, &maxLength,error);
-        printf("%s\n", error);
-
-        exit(1);
-    }
+    scene = load_shader(&raymarch_v, &raymarch_f);
 
     glGenVertexArrays(1, &vao);
+    glGenFramebuffers(2, fbo);
 
     GdkGLContext *context = gtk_gl_area_get_context(area);
     GdkWindow *glwindow = gdk_gl_context_get_window(context);
