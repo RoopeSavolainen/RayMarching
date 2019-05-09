@@ -44,7 +44,7 @@ static void realize(GtkGLArea *area)
 {
     gtk_gl_area_make_current(area);
 
-    scene = load_shader(&raymarch_v, &raymarch_f);
+    scene = load_shader(&raymarch_vert, &raymarch_frag);
 
     glGenVertexArrays(1, &vao);
     glGenFramebuffers(2, fbo);
