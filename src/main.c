@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     g_signal_connect(glarea, "realize", G_CALLBACK(realize), NULL);
     g_signal_connect(glarea, "render", G_CALLBACK(render), NULL);
 
-    gtk_widget_show_all (win);
+    gtk_widget_show_all(win);
 
     gtk_window_set_title((GtkWindow*)win, "Demo");
     gtk_window_resize((GtkWindow*)win, WIN_WIDTH, WIN_HEIGHT);
