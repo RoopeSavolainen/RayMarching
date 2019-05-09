@@ -7,8 +7,10 @@ OBJS = $(addprefix obj/, $(addsuffix .o, \
 
 OUT = demo
 
-all:    $(OUT)
+all:    $(OUT)_pack
 
+$(OUT)_pack:	$(OUT)
+	./pack.sh $(OUT)
 
 obj/%.o: src/%.c inc/shaders.h
 	mkdir -p obj; \
@@ -21,4 +23,4 @@ inc/shaders.h:	shaders/*
 	./gen_shaders.sh
 
 clean:	
-	@rm -f $(OUTFILE) inc/shaders.h obj/*
+	@rm -f $(OUT) $(OUT)_pack inc/shaders.h obj/*

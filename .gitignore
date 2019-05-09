@@ -52,6 +52,7 @@ Mkfile.old
 dkms.conf
 
 demo
+demo_pack
 .ycm_extra_conf.py
 obj/
 inc/shaders.h
